@@ -54,21 +54,19 @@ int callRemoteMmap() {
 }
 
 int callRemoteDlopen(void *remoteMmapAddr) {
-    long parameters[2];
-
-    void *dlopen_addr = getDlOpenAddr(pid);
-    LOGE("dlopen getRemoteFuncAddr: 0x%lx", (uintptr_t)dlopen_addr);
-
-    //Get address for dlerror
-    void *dlErrorAddr = getDlerrorAddr(pid);
+    long parameters[6];
 
     //Return value of dlopen is the start address of the loaded module
     //void *dlopen(const char *filename, int flag);
     parameters[0] = (uintptr_t) remoteMmapAddr;
     parameters[1] = RTLD_NOW | RTLD_GLOBAL;
 
+    void *dlopen_addr = getDlOpenAddr(pid);
+    void *dlErrorAddr = getDlerrorAddr(pid);
+    LOGE("dlopen getRemoteFuncAddr: 0x%lx", (uintptr_t)dlopen_addr);
+
     //Calls dlopen which loads the lib
-    if (ptrace_call(pid, (uintptr_t) dlopen_addr, parameters, 2, &currentRegs) != -1) {
+    if (ptrace_call(pid, (uintptr_t) dlopen_addr, parameters, 2, &currentRegs) == -1) {
         LOGE("Call dlopen Failed");
         return -1;
     }
