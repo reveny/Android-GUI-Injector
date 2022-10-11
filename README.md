@@ -8,6 +8,11 @@ GUI App for Injecting shared libraries on Android
 # Build and Installation
 Android Studio is required: https://developer.android.com/studio  <br />
 
+# Note
+The library you want to Inject needs to be compiled for the target architecture, otherwise it will not work. <br />
+Example: <br />
+Arch: x86 (Emulator) -> x86 Library needs to be Injected
+
 # Credits
 Android-Ptrace-Injector by me: https://github.com/reveny/Android-Ptrace-Injector <br />
 LibSu by topjohnwu: https://github.com/topjohnwu/libsu <br />
