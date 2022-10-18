@@ -45,16 +45,18 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback 
     AutoCompleteTextView autoCompleteTextView;
     EditText libPath;
     CheckBox autoLaunchBox;
+    CheckBox ptraceBox;
+    CheckBox ldpreloadBox;
+    TextView archText;
     TextView console;
     Button githubButton;
-    Button tutorialButton;
+    Button uninjectButton;
     Button injectButton;
-    TextView archText;
 
     ArrayAdapter<String> adapterItems;
 
-    public String packageName;
-    public String finalLibPath;
+    public String packageName = "";
+    public String finalLibPath = "";
     public String launchActivity;
     public boolean shouldAutoLaunch = true;
 
@@ -84,11 +86,13 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback 
         autoCompleteTextView = findViewById(R.id.auto_complete_txt);
         libPath = findViewById(R.id.path_to_lib);
         githubButton = findViewById(R.id.github_button);
-        tutorialButton = findViewById(R.id.tutorial_button);
+        uninjectButton = findViewById(R.id.tutorial_button);
         injectButton = findViewById(R.id.inject_button);
         autoLaunchBox = findViewById(R.id.auto_launch_toggle);
+        ptraceBox = findViewById(R.id.mode_ptrace);
+        ldpreloadBox = findViewById(R.id.mode_ldpreload);
+        archText = findViewById(R.id.architecture);
         console = findViewById(R.id.console);
-        archText = findViewById(R.id.arch);
 
         //Set installed packages
         adapterItems = new ArrayAdapter<String>(this, R.layout.list_item, getInstalledApps());
@@ -99,34 +103,60 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback 
                 String item = parent.getItemAtPosition(position).toString();
                 packageName = item;
                 console.append("Package Name: " + item + "\n");
+                String arch = "Unknown";
+
+                try {
+                    String libraryDir = getPackageManager().getApplicationInfo(packageName, 0).nativeLibraryDir;
+                    arch = libraryDir.substring(libraryDir.lastIndexOf("/") + 1);
+                } catch (PackageManager.NameNotFoundException exception) {
+                    exception.printStackTrace();
+                }
+
+                archText.setText("Architecture: " + arch);
             }
         });
 
         libPath.setText("/data/local/tmp/libnative.so"); //Set default path
-        archText.setText(Build.CPU_ABI.toString());
+        console.append("Device Architecture: " + Build.CPU_ABI.toString() + " \n");
 
         injectButton.setOnClickListener(new View.OnClickListener()  {
             @Override
             public void onClick(View v) {
+                checkLibPath();
                 if (hasRootAccess) {
-                    MSGConnection mSGConnection = messageConnection;
-                    if (mSGConnection == null) {
-                        console.append("Binding root services\n");
-
-                        shouldAutoLaunch = autoLaunchBox.isChecked();
-                        launchActivity = getLaunchActivity(packageName);
-                        checkLibPath();
-
-                        console.append("---------------------------------------\n");
-                        console.append("Trying to Inject with following settings: \n");
-                        console.append("shouldAutoLaunch: " + shouldAutoLaunch + "\n");
-                        console.append("packageName: " + packageName + "\n");
-                        console.append("launchActivity: " + launchActivity + "\n");
-                        console.append("finalLibPath: " + finalLibPath + "\n");
-                        console.append("---------------------------------------\n");
-                        RootService.bind(new Intent(thisInstance, RootService.class), new MSGConnection());
+                    if (packageName.equals("") || finalLibPath.equals("")) {
+                        console.append("Please fill out all the fields\n");
                     } else {
-                        RootService.unbind(mSGConnection);
+                        if (ptraceBox.isChecked()) {
+                            MSGConnection mSGConnection = messageConnection;
+                            if (mSGConnection == null) {
+                                console.append("Binding root services\n");
+
+                                shouldAutoLaunch = autoLaunchBox.isChecked();
+                                launchActivity = getLaunchActivity(packageName);
+
+                                console.append("---------------------------------------\n");
+                                console.append("Trying to Inject with following settings: \n");
+                                console.append("shouldAutoLaunch: " + shouldAutoLaunch + "\n");
+                                console.append("packageName: " + packageName + "\n");
+                                console.append("launchActivity: " + launchActivity + "\n");
+                                console.append("finalLibPath: " + finalLibPath + "\n");
+                                console.append("---------------------------------------\n");
+                                RootService.bind(new Intent(thisInstance, RootService.class), new MSGConnection());
+                            } else {
+                                RootService.unbind(mSGConnection);
+                            }
+                        } else if (ldpreloadBox.isChecked()) {
+                            if (packageName.equals("") || finalLibPath.equals("")) {
+                                console.append("Please fill out all the fields\n");
+                            } else {
+                                String command = "setprop wrap." + packageName + " LD_PRELOAD=" + finalLibPath;
+                                Shell.cmd(command).exec();
+                                Toast.makeText(thisInstance, "Injected! The game might take longer to load", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            console.append("You need to select an Injection mode \n");
+                        }
                     }
                 } else {
                     console.append("Bind root service failed: root access not granted\n");
@@ -134,12 +164,16 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback 
             }
         });
 
-        tutorialButton.setOnClickListener(new View.OnClickListener()  {
+        uninjectButton.setOnClickListener(new View.OnClickListener()  {
             @Override
             public void onClick(View v) {
-                Toast.makeText(thisInstance, "No tutorial yet :(", Toast.LENGTH_LONG).show();
-                //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://github.com/reveny"));
-                //startActivity(browserIntent);
+                if (packageName.isEmpty()) {
+                    console.append("Cannot uninject without a package name\n");
+                } else {
+                    String command = "resetprop --delete wrap." + packageName;
+                    Shell.cmd(command).exec();
+                    Toast.makeText(thisInstance, "Uninjected!", Toast.LENGTH_LONG).show();
+                }
             }
         });
 

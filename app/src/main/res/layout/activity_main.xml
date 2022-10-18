@@ -24,6 +24,12 @@
             android:inputType="none"
             tools:ignore="LabelFor" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/architecture"
+            android:text="Architecture: " />
+
         <CheckBox
             android:id="@+id/auto_launch_toggle"
             android:layout_width="wrap_content"
@@ -36,17 +42,23 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/arch_txt"
-            android:text="@string/architecture" >
+            android:id="@+id/mode_text"
+            android:text="Mode:" >
         </TextView>
 
-        <TextView
-            android:id="@+id/arch"
+        <CheckBox
+            android:id="@+id/mode_ptrace"
+            android:layout_width="96dp"
+            android:layout_height="27dp"
+            android:text="@string/ptrace"
+            tools:ignore="MissingConstraints" />
+
+        <CheckBox
+            android:id="@+id/mode_ldpreload"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text=""
-        />
+            android:layout_height="30dp"
+            android:text="@string/ldpreload"
+            tools:ignore="MissingConstraints" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
@@ -94,7 +106,7 @@
     <ScrollView
         android:id="@+id/consoleLog"
         android:layout_width="match_parent"
-        android:layout_height="298dp"
+        android:layout_height="241dp"
         android:layout_marginBottom="180dp"
         android:layout_weight="1"
         android:background="@color/grey"
@@ -135,7 +147,7 @@
         android:id="@+id/tutorial_button"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:text="@string/tutorial"
+        android:text="@string/uninject_only_for_ldpreload"
         android:backgroundTint="@color/blue"
         app:layout_constraintBottom_toTopOf="@+id/github_button"
         app:layout_constraintEnd_toEndOf="parent"

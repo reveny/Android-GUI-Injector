@@ -10,4 +10,7 @@
     <string name="github">Github</string>
     <string name="tutorial">Tutorial</string>
     <string name="architecture">Architecture:</string>
+    <string name="ldpreload">LDPreload</string>
+    <string name="ptrace">PTrace</string>
+    <string name="uninject_only_for_ldpreload">Uninject (only for LDPreload)</string>
 </resources>

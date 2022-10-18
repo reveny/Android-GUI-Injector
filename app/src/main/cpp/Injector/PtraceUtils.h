@@ -295,52 +295,51 @@ int ptrace_call(pid_t pid, uintptr_t ExecuteAddr, long *parameters, long num_par
         if (ptrace_getregs(pid, regs) == -1) {
             return -1;
         }
-
     #elif defined(__x86_64__)
-        LOGE("Ptrace call x86_64");
-        int num_param_registers = 6;
-        if (num_params > 0)
-            regs->rdi = parameters[0];
-        if (num_params > 1)
-            regs->rsi = parameters[1];
-        if (num_params > 2)
-            regs->rdx = parameters[2];
-        if (num_params > 3)
-            regs->rcx = parameters[3];
-        if (num_params > 4)
-            regs->r8 = parameters[4];
-        if (num_params > 5)
-            regs->r9 = parameters[5];
+       LOGE("Ptrace call x86_64");
+       int num_param_registers = 6;
+       if (num_params > 0)
+           regs->rdi = parameters[0];
+       if (num_params > 1)
+           regs->rsi = parameters[1];
+       if (num_params > 2)
+           regs->rdx = parameters[2];
+       if (num_params > 3)
+           regs->rcx = parameters[3];
+       if (num_params > 4)
+           regs->r8 = parameters[4];
+       if (num_params > 5)
+           regs->r9 = parameters[5];
 
-        if (num_param_registers < num_params){
-            regs->esp -= (num_params - num_param_registers) * sizeof(long); //Allocate stack space, the direction of the stack is from high address to low address
-            if (0 != ptrace_writedata(pid, (uint8_t *)regs->esp, (uint8_t *)&parameters[num_param_registers], (num_params - num_param_registers) * sizeof(long))){
-                return -1;
-            }
-        }
+       if (num_param_registers < num_params){
+           regs->esp -= (num_params - num_param_registers) * sizeof(long); //Allocate stack space, the direction of the stack is from high address to low address
+           if (0 != ptrace_writedata(pid, (uint8_t *)regs->esp, (uint8_t *)&parameters[num_param_registers], (num_params - num_param_registers) * sizeof(long))){
+               return -1;
+           }
+       }
 
-        long tmp_addr = 0x0;
-        regs->esp -= sizeof(long);
-        if (0 != ptrace_writedata(pid, (uint8_t *)regs->esp, (uint8_t *)&tmp_addr, sizeof(tmp_addr))) {
-            return -1;
-        }
+       long tmp_addr = 0x0;
+       regs->esp -= sizeof(long);
+       if (0 != ptrace_writedata(pid, (uint8_t *)regs->esp, (uint8_t *)&tmp_addr, sizeof(tmp_addr))) {
+           return -1;
+       }
 
-        regs->eip = ExecuteAddr;
+       regs->eip = ExecuteAddr;
 
-        if (ptrace_setregs(pid, regs) == -1 || ptrace_continue(pid) == -1) {
-            return -1;
-        }
+       if (ptrace_setregs(pid, regs) == -1 || ptrace_continue(pid) == -1) {
+           return -1;
+       }
 
-        int stat = 0;
-        waitpid(pid, &stat, WUNTRACED);
+       int stat = 0;
+       waitpid(pid, &stat, WUNTRACED);
 
-        while (stat != 0xb7f){
-            if (ptrace_continue(pid) == -1){
-                //printf("[-] ptrace call error");
-                return -1;
-            }
-            waitpid(pid, &stat, WUNTRACED);
-        }
+       while (stat != 0xb7f){
+           if (ptrace_continue(pid) == -1){
+               //printf("[-] ptrace call error");
+               return -1;
+           }
+           waitpid(pid, &stat, WUNTRACED);
+       }
 
     #elif defined(__arm__) || defined(__aarch64__)
     #if defined(__arm__)
@@ -382,6 +381,7 @@ int ptrace_call(pid_t pid, uintptr_t ExecuteAddr, long *parameters, long num_par
             }
             lr_val = start_ptr;
         }
+        LOGE("lr_val: %ld", lr_val);
         regs->ARM_lr = lr_val;
 
         if (ptrace_setregs(pid, regs) == -1 || ptraceContinue(pid) == -1){
@@ -401,9 +401,8 @@ int ptrace_call(pid_t pid, uintptr_t ExecuteAddr, long *parameters, long num_par
         if (ptrace_getregs(pid, regs) == -1){
             return -1;
         }
-
     #else
-        LOGE("Unsupported device")
+        LOGE("Unsupported device");
     #endif
     return 0;
 }
