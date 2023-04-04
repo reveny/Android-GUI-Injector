@@ -15,22 +15,22 @@
 #include "Utils.h"
 
 #if defined(__aarch64__) //x64
-    #define pt_regs user_pt_regs
-    #define uregs regs
-    #define ARM_pc pc
-    #define ARM_sp sp
-    #define ARM_cpsr pstate
-    #define ARM_lr regs[30]
-    #define ARM_r0 regs[0]
-    #define PTRACE_GETREGS PTRACE_GETREGSET
-    #define PTRACE_SETREGS PTRACE_SETREGSET
+#define pt_regs user_pt_regs
+#define uregs regs
+#define ARM_pc pc
+#define ARM_sp sp
+#define ARM_cpsr pstate
+#define ARM_lr regs[30]
+#define ARM_r0 regs[0]
+#define PTRACE_GETREGS PTRACE_GETREGSET
+#define PTRACE_SETREGS PTRACE_SETREGSET
 #elif defined(__x86_64__) //x86_64
-    #define pt_regs user_regs_struct
-    #define eax rax
-    #define esp rsp
-    #define eip rip
+#define pt_regs user_regs_struct
+#define eax rax
+#define esp rsp
+#define eip rip
 #elif defined(__i386__) //x86
-    #define pt_regs user_regs_struct
+#define pt_regs user_regs_struct
 #endif
 
 // rest predefined
@@ -74,8 +74,8 @@ int ptraceDetach(pid_t pid) {
 
 //get the register value of the process
 int ptrace_getregs(pid_t pid, struct pt_regs *regs) {
-    #if defined(__aarch64__)
-        int regset = NT_PRSTATUS;
+#if defined(__aarch64__)
+    int regset = NT_PRSTATUS;
         struct iovec ioVec;
 
         ioVec.iov_base = regs;
@@ -86,19 +86,19 @@ int ptrace_getregs(pid_t pid, struct pt_regs *regs) {
         }
 
         return 0;
-    #else
-        if (ptrace(PTRACE_GETREGS, pid, NULL, regs) < 0) {
-            LOGE("Get Ptrace regs error, error: %s\n", strerror(errno));
-            return -1;
-        }
-    #endif
+#else
+    if (ptrace(PTRACE_GETREGS, pid, NULL, regs) < 0) {
+        LOGE("Get Ptrace regs error, error: %s\n", strerror(errno));
+        return -1;
+    }
+#endif
     return 0;
 }
 
 //set the register value of the process
 int ptrace_setregs(pid_t pid, struct pt_regs *regs){
-    #if defined(__aarch64__)
-        int regset = NT_PRSTATUS;
+#if defined(__aarch64__)
+    int regset = NT_PRSTATUS;
         struct iovec ioVec;
 
         ioVec.iov_base = regs;
@@ -109,35 +109,35 @@ int ptrace_setregs(pid_t pid, struct pt_regs *regs){
         }
 
         return 0;
-    #else
-        if (ptrace(PTRACE_SETREGS, pid, NULL, regs) < 0) {
-            LOGE("Set Regs error, pid:%d, err:%s\n", pid, strerror(errno));
-            return -1;
-        }
-    #endif
+#else
+    if (ptrace(PTRACE_SETREGS, pid, NULL, regs) < 0) {
+        LOGE("Set Regs error, pid:%d, err:%s\n", pid, strerror(errno));
+        return -1;
+    }
+#endif
     return 0;
 }
 
 //Return value of any function in the process
 //Return value is stored in the corresponding register
 long ptrace_getret(struct pt_regs *regs) {
-    #if defined(__x86_64__)//defined(__i386__) || defined(__x86_64__) //
-        return regs->eax;
-    #elif defined(__arm__) || defined(__aarch64__) || defined(__i386__) //
-        return regs->ARM_r0;
+#if defined(__i386__) || defined(__x86_64__) //
+    return regs->eax;
+#elif defined(__arm__) || defined(__aarch64__) //
+    return regs->ARM_r0;
     #else
         LOGE("Device not supported");
-    #endif
+#endif
 }
 
 long ptrace_getpc(struct pt_regs *regs) {
-    #if defined(__i386__) || defined(__x86_64__)
-        return regs->eip;
-    #elif defined(__arm__) || defined(__aarch64__)
-        return regs->ARM_pc;
+#if defined(__i386__) || defined(__x86_64__)
+    return regs->eip;
+#elif defined(__arm__) || defined(__aarch64__)
+    return regs->ARM_pc;
     #else
         LOGE("Device not supported");
-    #endif
+#endif
 }
 
 //get the dlopen address of the target process
@@ -262,41 +262,41 @@ int ptrace_writedata(pid_t pid, uint8_t *pWriteAddr, uint8_t *pWriteData, size_t
 
 //call a function on the target process
 int ptrace_call(pid_t pid, uintptr_t ExecuteAddr, long *parameters, long num_params,struct pt_regs *regs) {
-    #if defined(__i386__)
-        regs->esp -= (num_params) * sizeof(long);
-        if (0 != ptrace_writedata(pid, (uint8_t *)regs->esp, (uint8_t *)parameters,(num_params) * sizeof(long))){
+#if defined(__i386__)
+    regs->esp -= (num_params) * sizeof(long);
+    if (0 != ptrace_writedata(pid, (uint8_t *)regs->esp, (uint8_t *)parameters,(num_params) * sizeof(long))){
+        return -1;
+    }
+
+    long tmp_addr = 0x0;
+    regs->esp -= sizeof(long);
+    if (0 != ptrace_writedata(pid, (uint8_t *)regs->esp, (uint8_t *)&tmp_addr, sizeof(tmp_addr))){
+        return -1;
+    }
+
+    regs->eip = ExecuteAddr;
+
+    if (ptrace_setregs(pid, regs) == -1 || ptraceContinue(pid) == -1) {
+        return -1;
+    }
+
+    int stat = 0;
+    waitpid(pid, &stat, WUNTRACED);
+
+    LOGI("ptrace call return value is %d", stat);
+    while (stat != 0xb7f) {
+        if (ptraceContinue(pid) == -1) {
+            LOGE("ptrace call error");
             return -1;
         }
-
-        long tmp_addr = 0x0;
-        regs->esp -= sizeof(long);
-        if (0 != ptrace_writedata(pid, (uint8_t *)regs->esp, (uint8_t *)&tmp_addr, sizeof(tmp_addr))){
-            return -1;
-        }
-
-        regs->eip = ExecuteAddr;
-
-        if (ptrace_setregs(pid, regs) == -1 || ptraceContinue(pid) == -1) {
-            return -1;
-        }
-
-        int stat = 0;
         waitpid(pid, &stat, WUNTRACED);
+    }
 
-        LOGI("ptrace call return value is %d", stat);
-        while (stat != 0xb7f) {
-            if (ptraceContinue(pid) == -1) {
-                LOGE("ptrace call error");
-                return -1;
-            }
-            waitpid(pid, &stat, WUNTRACED);
-        }
-
-        if (ptrace_getregs(pid, regs) == -1) {
-            return -1;
-        }
-    #elif defined(__x86_64__)
-       LOGE("Ptrace call x86_64");
+    if (ptrace_getregs(pid, regs) == -1) {
+        return -1;
+    }
+#elif defined(__x86_64__)
+    LOGE("Ptrace call x86_64");
        int num_param_registers = 6;
        if (num_params > 0)
            regs->rdi = parameters[0];
@@ -403,6 +403,6 @@ int ptrace_call(pid_t pid, uintptr_t ExecuteAddr, long *parameters, long num_par
         }
     #else
         LOGE("Unsupported device");
-    #endif
+#endif
     return 0;
 }
