@@ -28,33 +28,41 @@ int initInject() {
 
     int res = injectRemoteProcess();
     LOGW("Inject Result: %d", res);
+
+    //Restore SELinux flag
+    enableSELinux();
+
     return res;
 }
 
 struct pt_regs currentRegs, originalRegs;
 int callRemoteMmap() {
-    long parameters[6];
+    long parameters[1];
 
-    void *mmapAddr = getRemoteFuncAddr(pid, libcPath, (void *)mmap);
-    LOGI("Mmap Function Address: 0x%lx\n", (uintptr_t)mmapAddr);
+    void *mmapAddr = getRemoteFuncAddr(pid, libcPath, (void *)malloc);
+    LOGI("Mmap Function Address: 0x%lx\n", mmapAddr);
 
     //void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offsize);
-    parameters[0] = 0; //Not needed
-    parameters[1] = 0x3000;
-    parameters[2] = PROT_READ | PROT_WRITE | PROT_EXEC;
-    parameters[3] = MAP_ANONYMOUS | MAP_PRIVATE;
-    parameters[4] = 0; //Not needed
-    parameters[5] = 0; //Not needed
+    //parameters[0] = 0; //Not needed
+    //parameters[1] = 0x3000;
+    //parameters[2] = PROT_READ | PROT_WRITE | PROT_EXEC;
+    //parameters[3] = MAP_ANONYMOUS | MAP_PRIVATE;
+    //parameters[4] = 0; //Not needed
+    //parameters[5] = 0; //Not needed
+
+    //This hopefully fixes I/O Error issues
+    //void* malloc(size_t size)
+    parameters[0] = 256; //Size
 
     //Call the mmap function of the target process
-    if (ptrace_call(pid, (uintptr_t)mmapAddr, parameters, 6, &currentRegs)) {
+    if (ptrace_call(pid, (uintptr_t)mmapAddr, parameters, 1, &currentRegs)) {
         return -1;
     }
     return 0;
 }
 
 int callRemoteDlopen(void *remoteMmapAddr) {
-    long parameters[6];
+    long parameters[2];
 
     //Return value of dlopen is the start address of the loaded module
     //void *dlopen(const char *filename, int flag);

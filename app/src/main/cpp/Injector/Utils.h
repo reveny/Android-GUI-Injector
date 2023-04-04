@@ -102,6 +102,25 @@ void disableSELinux() {
     fclose(fp);
 }
 
+void enableSELinux() {
+    char line[1024];
+    FILE* fp = fopen("/proc/mounts", "r");
+    while(fgets(line, 1024, fp)) {
+        if (strstr(line, "selinuxfs")) {
+            strtok(line, " ");
+            char* selinux_dir = strtok(NULL, " ");
+            char* selinux_path = strcat(selinux_dir, "/enforce");
+
+            FILE* fp_selinux = fopen(selinux_path, "w");
+            char buf[2] = "1"; //0 = Enforcing
+            fwrite(buf, strlen(buf), 1, fp_selinux);
+            fclose(fp_selinux);
+            break;
+        }
+    }
+    fclose(fp);
+}
+
 pid_t getPID(const char* process_name) {
     if (process_name == nullptr) {
         return -1;

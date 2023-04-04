@@ -15,22 +15,22 @@
 #include "Utils.h"
 
 #if defined(__aarch64__) //x64
-#define pt_regs user_pt_regs
-#define uregs regs
-#define ARM_pc pc
-#define ARM_sp sp
-#define ARM_cpsr pstate
-#define ARM_lr regs[30]
-#define ARM_r0 regs[0]
-#define PTRACE_GETREGS PTRACE_GETREGSET
-#define PTRACE_SETREGS PTRACE_SETREGSET
+    #define pt_regs user_pt_regs
+    #define uregs regs
+    #define ARM_pc pc
+    #define ARM_sp sp
+    #define ARM_cpsr pstate
+    #define ARM_lr regs[30]
+    #define ARM_r0 regs[0]
+    #define PTRACE_GETREGS PTRACE_GETREGSET
+    #define PTRACE_SETREGS PTRACE_SETREGSET
 #elif defined(__x86_64__) //x86_64
-#define pt_regs user_regs_struct
-#define eax rax
-#define esp rsp
-#define eip rip
+    #define pt_regs user_regs_struct
+    #define eax rax
+    #define esp rsp
+    #define eip rip
 #elif defined(__i386__) //x86
-#define pt_regs user_regs_struct
+    #define pt_regs user_regs_struct
 #endif
 
 // rest predefined
@@ -121,9 +121,9 @@ int ptrace_setregs(pid_t pid, struct pt_regs *regs){
 //Return value of any function in the process
 //Return value is stored in the corresponding register
 long ptrace_getret(struct pt_regs *regs) {
-    #if defined(__i386__) || defined(__x86_64__) //
+    #if defined(__x86_64__)//defined(__i386__) || defined(__x86_64__) //
         return regs->eax;
-    #elif defined(__arm__) || defined(__aarch64__) //
+    #elif defined(__arm__) || defined(__aarch64__) || defined(__i386__) //
         return regs->ARM_r0;
     #else
         LOGE("Device not supported");

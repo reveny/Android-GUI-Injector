@@ -15,7 +15,9 @@ Arch: x86 (Emulator) -> x86 Library needs to be Injected
 
 # Credits
 Android-Ptrace-Injector by me: https://github.com/reveny/Android-Ptrace-Injector <br />
+Architecture-Checker by rev: https://github.com/Rev/Architecture-Checker <br />
 LibSu by topjohnwu: https://github.com/topjohnwu/libsu <br />
   
 # Screenshots
-![Screenshot](https://user-images.githubusercontent.com/113244907/194390440-b6372746-4a9e-4cb6-a84e-0a48b7bcd912.jpg)
+![Screenshot](https://user-images.githubusercontent.com/113244907/196479161-daebbeef-95fd-4ba5-9c5b-de1319f57f85.jpg)
+
