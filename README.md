@@ -2,7 +2,7 @@
 GUI App for Injecting shared libraries on Android
 
 # Features
-- [x] Android 5 - 12
+- [x] Android 5 - 13
 - [x] Auto launch game
 
 # Build and Installation
