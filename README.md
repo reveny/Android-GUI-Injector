@@ -13,7 +13,7 @@ Android Studio is required: https://developer.android.com/studio  <br />
 # Note
 The library you want to Inject needs to be compiled for the target architecture, otherwise it will not work. <br />
 Example: <br />
-Arch: x86 (Emulator) -> x86 Library needs to be Injected
+Arch: x86 (Emulator) -> x86 Library needs to be Injected. <br />
 If you don't want to call any function name, leave the field empty
 
 # Credits
