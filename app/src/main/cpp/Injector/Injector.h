@@ -41,7 +41,7 @@ int callRemoteMmap() {
     long parameters[1];
 
     void *mmapAddr = getRemoteFuncAddr(pid, libcPath, (void *)malloc);
-    LOGI("Mmap Function Address: 0x%lx\n", mmapAddr);
+    LOGI("Mmap Function Address: 0x%lx", mmapAddr);
 
     //void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offsize);
     //parameters[0] = 0; //Not needed
@@ -72,7 +72,7 @@ int callRemoteDlopen(void *remoteMmapAddr) {
 
     void *dlopen_addr = getDlOpenAddr(pid);
     void *dlErrorAddr = getDlerrorAddr(pid);
-    LOGE("dlopen getRemoteFuncAddr: 0x%lx", (uintptr_t)dlopen_addr);
+    LOGI("dlopen getRemoteFuncAddr: 0x%lx", dlopen_addr);
 
     //Calls dlopen which loads the lib
     if (ptrace_call(pid, (uintptr_t) dlopen_addr, parameters, 2, &currentRegs) == -1) {
@@ -99,30 +99,28 @@ int callRemoteDlopen(void *remoteMmapAddr) {
     return 0;
 }
 
-int callRemoteFunction(void *remoteMapMemoryAddr)
-{
+int callRemoteFunction(void *remoteMapMemoryAddr) {
     long parameters[2];
     if (ptrace_writedata(pid, (uint8_t *) remoteMapMemoryAddr + strlen(libraryPath) + 2,(uint8_t *) functionName, strlen(functionName) + 1) == -1) {
-        LOGD("Write functionName:%s to RemoteProcess error\n", functionName);
+        LOGE("Write functionName:%s to RemoteProcess error", functionName);
         return -1;
     }
 
     void *dlsym_addr = getDlsymAddr(pid);
-
     void *remoteModuleAddr = (void *)ptrace_getret(&currentRegs);
 
     parameters[0] = (uintptr_t) remoteModuleAddr;
     parameters[1] = (uintptr_t) ((uint8_t *) remoteMapMemoryAddr + strlen(libraryPath) + 2);
 
     if (ptrace_call(pid, (uintptr_t) dlsym_addr, parameters, 2, &currentRegs) == -1) {
-        LOGE("Call Remote dlsym Func Failed\n");
+        LOGE("Call Remote dlsym Func Failed");
         return -1;
     }
     void *remoteModuleFuncAddr = (void *) ptrace_getret(&currentRegs);
-    LOGI("ptrace_call dlsym success, Remote Process ModuleFunc Addr:0x%lx\n",(uintptr_t) remoteModuleFuncAddr);
+    LOGI("ptrace_call dlsym success, Remote Process ModuleFunc Addr:0x%lx", remoteModuleFuncAddr);
 
     if (ptrace_call(pid, (uintptr_t) remoteModuleFuncAddr, parameters, 0,&currentRegs) == -1) {
-        LOGE("Call Remote injected Func Failed\n");
+        LOGE("Call Remote injected Func Failed");
         return -1;
     }
     return 0;
@@ -149,11 +147,11 @@ int injectRemoteProcess() {
         LOGE("Call Remote mmap Func Failed: %s", strerror(errno));
         returnValue = -1;
     }
-    LOGE("ptrace_call mmap success. return value=%lX, pc=%lX", ptrace_getret(&currentRegs), ptrace_getpc(&currentRegs));
+    LOGI("ptrace_call mmap success. return value=%lX, pc=%lX", ptrace_getret(&currentRegs), ptrace_getpc(&currentRegs));
 
     // Return value is the starting address of the memory map
     void *remoteMapMemoryAddr = (void *)ptrace_getret(&currentRegs);
-    LOGI("Remote Process Map Address: 0x%lx", (uintptr_t)remoteMapMemoryAddr);
+    LOGI("Remote Process Map Address: 0x%lx", remoteMapMemoryAddr);
 
     //Params:            pid,             start addr,                      content,          size
     if (ptrace_writedata(pid, (uint8_t *) remoteMapMemoryAddr, (uint8_t *) libraryPath, strlen(libraryPath) + 1) == -1) {
@@ -166,10 +164,14 @@ int injectRemoteProcess() {
         returnValue = -1;
     }
 
-    if (callRemoteFunction(remoteMapMemoryAddr) == -1)
-    {
-        LOGE("Write FunctionName:%s to RemoteProcess error\n", functionName);
-        returnValue = -1;
+    //Check if we even want to call any function
+    if (strlen(functionName) != 0) {
+        if (callRemoteFunction(remoteMapMemoryAddr) == -1) {
+            LOGE("Write FunctionName:%s to RemoteProcess error", functionName);
+            returnValue = -1;
+        }
+    } else {
+        LOGI("Function Name is empty, skipping call");
     }
 
     if (ptrace_setregs(pid, &originalRegs) == -1) {

@@ -64,9 +64,10 @@
         android:id="@+id/mode_ldpreload"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
+        android:layout_marginStart="5dp"
         android:text="@string/ldpreload"
-        app:layout_constraintTop_toBottomOf="@+id/mode_text"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/mode_ptrace"
+        app:layout_constraintTop_toBottomOf="@+id/mode_text" />
 
     <TextView
         android:id="@+id/path_to_lib_txt"

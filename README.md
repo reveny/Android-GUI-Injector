@@ -4,6 +4,8 @@ GUI App for Injecting shared libraries on Android
 # Features
 - [x] Android 5 - 13
 - [x] Auto launch game
+- [x] LDPreload Injection
+- [x] Call Function Name
 
 # Build and Installation
 Android Studio is required: https://developer.android.com/studio  <br />
@@ -12,6 +14,7 @@ Android Studio is required: https://developer.android.com/studio  <br />
 The library you want to Inject needs to be compiled for the target architecture, otherwise it will not work. <br />
 Example: <br />
 Arch: x86 (Emulator) -> x86 Library needs to be Injected
+If you don't want to call any function name, leave the field empty
 
 # Credits
 Android-Ptrace-Injector by me: https://github.com/reveny/Android-Ptrace-Injector <br />
