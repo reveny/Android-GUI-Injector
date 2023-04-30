@@ -35,10 +35,12 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService impleme
 
         String pkgName = message.getData().getString("pkg");
         String libPath = message.getData().getString("lib");
+        String functionName = message.getData().getString("fnc");
         String launcherAct = message.getData().getString("launcherAct");
         boolean autoLaunch = message.getData().getBoolean("launch");
 
-        int result = Native.Inject(pkgName, libPath, launcherAct, autoLaunch);
+        bundle.putString("fnc", functionName );
+        int result = Native.Inject(pkgName, libPath, functionName, launcherAct, autoLaunch);
         bundle.putInt("result", result);
         msg.setData(bundle);
 

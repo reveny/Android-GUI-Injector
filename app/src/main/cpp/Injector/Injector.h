@@ -5,6 +5,7 @@ int injectRemoteProcess();
 const char *pkgName = "";
 const char *appLaunchActivity = "";
 const char *libraryPath = "";
+const char *functionName = "";
 bool shouldAutoLaunch = true;
 
 pid_t pid = 0;
@@ -98,6 +99,35 @@ int callRemoteDlopen(void *remoteMmapAddr) {
     return 0;
 }
 
+int callRemoteFunction(void *remoteMapMemoryAddr)
+{
+    long parameters[2];
+    if (ptrace_writedata(pid, (uint8_t *) remoteMapMemoryAddr + strlen(libraryPath) + 2,(uint8_t *) functionName, strlen(functionName) + 1) == -1) {
+        LOGD("Write functionName:%s to RemoteProcess error\n", functionName);
+        return -1;
+    }
+
+    void *dlsym_addr = getDlsymAddr(pid);
+
+    void *remoteModuleAddr = (void *)ptrace_getret(&currentRegs);
+
+    parameters[0] = (uintptr_t) remoteModuleAddr;
+    parameters[1] = (uintptr_t) ((uint8_t *) remoteMapMemoryAddr + strlen(libraryPath) + 2);
+
+    if (ptrace_call(pid, (uintptr_t) dlsym_addr, parameters, 2, &currentRegs) == -1) {
+        LOGE("Call Remote dlsym Func Failed\n");
+        return -1;
+    }
+    void *remoteModuleFuncAddr = (void *) ptrace_getret(&currentRegs);
+    LOGI("ptrace_call dlsym success, Remote Process ModuleFunc Addr:0x%lx\n",(uintptr_t) remoteModuleFuncAddr);
+
+    if (ptrace_call(pid, (uintptr_t) remoteModuleFuncAddr, parameters, 0,&currentRegs) == -1) {
+        LOGE("Call Remote injected Func Failed\n");
+        return -1;
+    }
+    return 0;
+}
+
 int injectRemoteProcess() {
     //Instead of directly returning we use a value so if something fails we still detach from the process
     int returnValue = 0;
@@ -133,6 +163,12 @@ int injectRemoteProcess() {
 
     if (callRemoteDlopen(remoteMapMemoryAddr) == -1) {
         LOGE("Call dlopen Failed");
+        returnValue = -1;
+    }
+
+    if (callRemoteFunction(remoteMapMemoryAddr) == -1)
+    {
+        LOGE("Write FunctionName:%s to RemoteProcess error\n", functionName);
         returnValue = -1;
     }
 

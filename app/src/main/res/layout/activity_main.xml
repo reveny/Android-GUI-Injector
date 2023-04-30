@@ -14,8 +14,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:hint="@string/select_target_package"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="16dp">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <AutoCompleteTextView
             android:id="@+id/auto_complete_txt"
@@ -23,57 +24,58 @@
             android:layout_height="wrap_content"
             android:inputType="none"
             tools:ignore="LabelFor" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/architecture"
-            android:text="Architecture: " />
-
-        <CheckBox
-            android:id="@+id/auto_launch_toggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/auto_launch_game"
-            tools:ignore="MissingConstraints"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="61dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/mode_text"
-            android:text="Mode:" >
-        </TextView>
-
-        <CheckBox
-            android:id="@+id/mode_ptrace"
-            android:layout_width="96dp"
-            android:layout_height="27dp"
-            android:text="@string/ptrace"
-            tools:ignore="MissingConstraints" />
-
-        <CheckBox
-            android:id="@+id/mode_ldpreload"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:text="@string/ldpreload"
-            tools:ignore="MissingConstraints" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/architecture"
+        android:text="Architecture: "
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <CheckBox
+        android:id="@+id/auto_launch_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/auto_launch_game"
+        app:layout_constraintTop_toBottomOf="@+id/architecture"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/mode_text"
+        android:text="Mode:"
+        app:layout_constraintTop_toBottomOf="@+id/auto_launch_toggle"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <CheckBox
+        android:id="@+id/mode_ptrace"
+        android:layout_width="96dp"
+        android:layout_height="27dp"
+        android:text="@string/ptrace"
+        app:layout_constraintTop_toBottomOf="@+id/mode_text"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <CheckBox
+        android:id="@+id/mode_ldpreload"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="@string/ldpreload"
+        app:layout_constraintTop_toBottomOf="@+id/mode_text"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/path_to_lib_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:layout_marginEnd="320dp"
-        android:layout_weight="1"
         android:text="@string/path_to_library"
-        app:layout_constraintBottom_toTopOf="@+id/path_to_lib"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.084"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/mode_ptrace"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/path_to_lib"
@@ -83,10 +85,31 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text=""
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/path_to_lib_txt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <TextView
+        android:id="@+id/function_name_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="@string/function_name"
+        app:layout_constraintTop_toBottomOf="@+id/path_to_lib"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/function_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text=""
+        app:layout_constraintTop_toBottomOf="@+id/function_name_txt"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <TextView
@@ -95,26 +118,20 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="3dp"
         android:layout_marginTop="1dp"
-        android:layout_marginEnd="333dp"
         android:text="@string/injector_log"
-        app:layout_constraintBottom_toTopOf="@+id/consoleLog"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.07"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/path_to_lib" />
+        app:layout_constraintTop_toBottomOf="@+id/function_name"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ScrollView
         android:id="@+id/consoleLog"
         android:layout_width="match_parent"
-        android:layout_height="241dp"
-        android:layout_marginBottom="180dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@color/grey"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintBottom_toTopOf="@+id/inject_button"
         app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="MissingConstraints">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -140,8 +157,8 @@
         android:text="@string/inject"
         android:backgroundTint="@color/blue"
         app:layout_constraintBottom_toTopOf="@+id/tutorial_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/tutorial_button"
@@ -150,28 +167,32 @@
         android:text="@string/uninject_only_for_ldpreload"
         android:backgroundTint="@color/blue"
         app:layout_constraintBottom_toTopOf="@+id/github_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/github_button"
         android:layout_width="match_parent"
-        android:backgroundTint="@color/blue"
-        android:layout_height="52dp"
+        android:layout_height="wrap_content"
+        android:autoLink="web"
+        android:gravity="center"
         android:text="@string/github"
-        app:layout_constraintBottom_toTopOf="@+id/github_txt"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textSize="12sp"
+        android:backgroundTint="@color/blue"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/github_txt"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:layout_marginBottom="5dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="@string/made_by_github_com_reveny"
-        android:textAlignment="center"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
