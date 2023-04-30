@@ -4,6 +4,7 @@
     <string name="auto_launch_game">Auto launch game</string>
     <string name="injector_log">Injector Log:</string>
     <string name="path_to_library">Path to library:</string>
+    <string name="function_name">Function name to execute. (only for ptrace)</string>
     <string name="change_path">Select File</string>
     <string name="made_by_github_com_reveny">Made by github.com/reveny</string>
     <string name="inject">Inject</string>

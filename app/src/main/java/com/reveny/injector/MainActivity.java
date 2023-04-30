@@ -2,6 +2,8 @@ package com.reveny.injector;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.button.MaterialButton;
 import com.topjohnwu.superuser.Shell;
 
 import android.annotation.SuppressLint;
@@ -44,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback 
     //UI
     AutoCompleteTextView autoCompleteTextView;
     EditText libPath;
+
+    EditText functionName;
     CheckBox autoLaunchBox;
     CheckBox ptraceBox;
     CheckBox ldpreloadBox;
@@ -57,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback 
 
     public String packageName = "";
     public String finalLibPath = "";
+    public String finalFunctionName = "";
     public String launchActivity;
     public boolean shouldAutoLaunch = true;
 
@@ -85,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback 
 
         autoCompleteTextView = findViewById(R.id.auto_complete_txt);
         libPath = findViewById(R.id.path_to_lib);
+        functionName = findViewById(R.id.function_name);
         githubButton = findViewById(R.id.github_button);
         uninjectButton = findViewById(R.id.tutorial_button);
         injectButton = findViewById(R.id.inject_button);
@@ -119,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback 
         libPath.setText("/data/local/tmp/libnative.so"); //Set default path
         console.append("Device Architecture: " + Build.CPU_ABI.toString() + " \n");
 
+
         injectButton.setOnClickListener(new View.OnClickListener()  {
             @Override
             public void onClick(View v) {
@@ -132,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback 
                             if (mSGConnection == null) {
                                 console.append("Binding root services\n");
 
+                                finalFunctionName = functionName.getText().toString();
                                 shouldAutoLaunch = autoLaunchBox.isChecked();
                                 launchActivity = getLaunchActivity(packageName);
 
@@ -141,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback 
                                 console.append("packageName: " + packageName + "\n");
                                 console.append("launchActivity: " + launchActivity + "\n");
                                 console.append("finalLibPath: " + finalLibPath + "\n");
+                                console.append("functionName: " + finalFunctionName + "\n");
                                 console.append("---------------------------------------\n");
                                 RootService.bind(new Intent(thisInstance, RootService.class), new MSGConnection());
                             } else {
@@ -219,6 +228,7 @@ public class MainActivity extends AppCompatActivity implements Handler.Callback 
             Message message = Message.obtain((Handler) null, 1);
             message.getData().putString("pkg", packageName);
             message.getData().putString("lib", finalLibPath);
+            message.getData().putString("fnc", finalFunctionName);
             message.getData().putString("launcherAct", launchActivity);
             message.getData().putBoolean("launch", shouldAutoLaunch);
             message.replyTo = replyMessenger;
