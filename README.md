@@ -17,6 +17,10 @@ arminject by evilsocket: https://github.com/evilsocket/arminject <br />
 ZygiskIl2cppDumper by Perfare: https://github.com/Perfare/Zygisk-Il2CppDumper <br />
 Magisk by topjohnwu: https://github.com/topjohnwu/Magisk <br />
 LibSu by topjohnwu: https://github.com/topjohnwu/libsu <br />
+
+# Contact
+Telegram Group: https://t.me/reveny1 <br>
+Telegram Contact: https://t.me/revenyy
   
 # Screenshots
 ![Pasted image](https://github.com/reveny/Android-GUI-Injector-V2/assets/113244907/f53e647d-3643-42d0-8565-727382918d68)
