@@ -1,4 +1,4 @@
-package com.reveny.injector;
+package com.reveny.injector.v2.root.services;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,9 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import com.reveny.injector.v2.Native;
+import com.reveny.injector.v2.ui.InjectFragment;
 
 public class RootService extends com.topjohnwu.superuser.ipc.RootService implements Handler.Callback {
 
@@ -33,14 +36,14 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService impleme
         Message msg = Message.obtain();
         Bundle bundle = new Bundle();
 
-        String pkgName = message.getData().getString("pkg");
-        String libPath = message.getData().getString("lib");
-        String functionName = message.getData().getString("fnc");
-        String launcherAct = message.getData().getString("launcherAct");
-        boolean autoLaunch = message.getData().getBoolean("launch");
+        String pkgName = message.getData().getString("package_name");
+        String libPath = message.getData().getString("library_path");
+        String launcherAct = message.getData().getString("launcher_activity");
+        boolean autoLaunch = message.getData().getBoolean("auto_launch");
+        boolean killBeforeLaunch = message.getData().getBoolean("kill_before_launch");
+        boolean remapLibrary = message.getData().getBoolean("remap_library");
 
-        bundle.putString("fnc", functionName );
-        int result = Native.Inject(pkgName, libPath, functionName, launcherAct, autoLaunch);
+        int result = Native.Inject(pkgName, libPath, launcherAct, autoLaunch, killBeforeLaunch, remapLibrary);
         bundle.putInt("result", result);
         msg.setData(bundle);
 

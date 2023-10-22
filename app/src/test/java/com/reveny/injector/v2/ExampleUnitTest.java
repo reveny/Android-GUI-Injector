@@ -1,4 +1,4 @@
-package com.reveny.injector;
+package com.reveny.injector.v2;
 
 import org.junit.Test;
 

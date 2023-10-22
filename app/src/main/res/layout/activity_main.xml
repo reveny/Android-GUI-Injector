@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,193 +7,38 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tablayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:hint="@string/select_target_package"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <AutoCompleteTextView
-            android:id="@+id/auto_complete_txt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="none"
-            tools:ignore="LabelFor" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/architecture"
-        android:text="Architecture: "
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <CheckBox
-        android:id="@+id/auto_launch_toggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/auto_launch_game"
-        app:layout_constraintTop_toBottomOf="@+id/architecture"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/mode_text"
-        android:text="Mode:"
-        app:layout_constraintTop_toBottomOf="@+id/auto_launch_toggle"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <CheckBox
-        android:id="@+id/mode_ptrace"
-        android:layout_width="96dp"
-        android:layout_height="27dp"
-        android:text="@string/ptrace"
-        app:layout_constraintTop_toBottomOf="@+id/mode_text"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <CheckBox
-        android:id="@+id/mode_ldpreload"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_marginStart="5dp"
-        android:text="@string/ldpreload"
-        app:layout_constraintStart_toEndOf="@+id/mode_ptrace"
-        app:layout_constraintTop_toBottomOf="@+id/mode_text" />
-
-    <TextView
-        android:id="@+id/path_to_lib_txt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:text="@string/path_to_library"
-        app:layout_constraintTop_toBottomOf="@+id/mode_ptrace"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/path_to_lib"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text=""
-        app:layout_constraintTop_toBottomOf="@+id/path_to_lib_txt"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="SpeakableTextPresentCheck" />
-
-    <TextView
-        android:id="@+id/function_name_txt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:text="@string/function_name"
-        app:layout_constraintTop_toBottomOf="@+id/path_to_lib"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/function_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text=""
-        app:layout_constraintTop_toBottomOf="@+id/function_name_txt"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="SpeakableTextPresentCheck" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="3dp"
+        android:layout_marginStart="1dp"
         android:layout_marginTop="1dp"
-        android:text="@string/injector_log"
-        app:layout_constraintTop_toBottomOf="@+id/function_name"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ScrollView
-        android:id="@+id/consoleLog"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/grey"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintBottom_toTopOf="@+id/inject_button"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Inject" />
 
-            <TextView
-                android:id="@+id/console"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="monospace"
-                android:padding="8dp"
-                android:textColor="@android:color/white"
-                android:textSize="12sp" />
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logs" />
 
-        </HorizontalScrollView>
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="About" />
+    </com.google.android.material.tabs.TabLayout>
 
-    </ScrollView>
-
-    <Button
-        android:id="@+id/inject_button"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewpager"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:text="@string/inject"
-        android:backgroundTint="@color/blue"
-        app:layout_constraintBottom_toTopOf="@+id/tutorial_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/tablayout"
+    />
 
-    <Button
-        android:id="@+id/tutorial_button"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:text="@string/uninject_only_for_ldpreload"
-        android:backgroundTint="@color/blue"
-        app:layout_constraintBottom_toTopOf="@+id/github_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/github_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:autoLink="web"
-        android:gravity="center"
-        android:text="@string/github"
-        android:textSize="12sp"
-        android:backgroundTint="@color/blue"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/github_txt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/made_by_github_com_reveny"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

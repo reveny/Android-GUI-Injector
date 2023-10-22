@@ -1,17 +1,10 @@
 <resources>
-    <string name="app_name">Injector</string>
-    <string name="select_target_package">Select target package</string>
-    <string name="auto_launch_game">Auto launch game</string>
-    <string name="injector_log">Injector Log:</string>
-    <string name="path_to_library">Path to library:</string>
-    <string name="function_name">Function name to execute. (only for ptrace)</string>
-    <string name="change_path">Select File</string>
-    <string name="made_by_github_com_reveny">Made by github.com/reveny</string>
-    <string name="inject">Inject</string>
+    <string name="app_name">Android Injector V2</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="created_by_reveny">Created by Reveny</string>
     <string name="github">Github</string>
-    <string name="tutorial">Tutorial</string>
-    <string name="architecture">Architecture:</string>
-    <string name="ldpreload">LDPreload</string>
-    <string name="ptrace">PTrace</string>
-    <string name="uninject_only_for_ldpreload">Uninject (only for LDPreload)</string>
+    <string name="telegram">Telegram</string>
+    <string name="telegram_channel">Telegram Channel</string>
+    <string name="device_information">Device Information</string>
 </resources>
