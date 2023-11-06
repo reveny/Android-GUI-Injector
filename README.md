@@ -11,6 +11,10 @@ GUI App for Injecting shared libraries on Android
 # Build and Installation
 Android Studio is required: https://developer.android.com/studio  <br />
 
+# Known Problems
+- Magisk Alpha & Delta have problems with handling ptrace, Injection may not work here.
+- Due to restrictions on android, the library needs to be in a location that allows executin for example /data/local/tmp/ or /data/...
+
 # Credits
 Android-Ptrace-Injector by me: https://github.com/reveny/Android-Ptrace-Injector <br />
 arminject by evilsocket: https://github.com/evilsocket/arminject <br />
@@ -23,4 +27,4 @@ Telegram Group: https://t.me/reveny1 <br>
 Telegram Contact: https://t.me/revenyy
   
 # Screenshots
-![Pasted image](https://github.com/reveny/Android-GUI-Injector-V2/assets/113244907/f53e647d-3643-42d0-8565-727382918d68)
+![Preview](https://github.com/reveny/Android-GUI-Injector/blob/main/images/preview.png)
