@@ -3,7 +3,9 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 MAIN_LOCAL_PATH := $(call my-dir)
+
 LOCAL_C_INCLUDES += $(MAIN_LOCAL_PATH)/../Include
+LOCAL_C_INCLUDES += $(MAIN_LOCAL_PATH)/../Injector/Headers
 
 include $(CLEAR_VARS)
 

@@ -13,9 +13,6 @@ public class LogManager {
 
     public static void AddLog(String log) {
         logs.add(log);
-        if (LogsFragment.instance != null) {
-            LogsFragment.instance.AddLog(log);
-        }
     }
 
     public static List<String> GetLogs() {

@@ -68,4 +68,17 @@ extern "C" {
 
         return result;
     }
+
+    JNIEXPORT jobjectArray JNICALL
+    Java_com_reveny_injector_v2_Native_GetNativeLogs(JNIEnv *env, jclass clazz) {
+        std::vector<std::string> local_log = log_messages;
+        jobjectArray ret{};
+
+        ret = (jobjectArray)env->NewObjectArray((int)local_log.size(), env->FindClass("java/lang/String"),env->NewStringUTF(""));
+        for (int i = 0; i < local_log.size(); ++i) {
+            env->SetObjectArrayElement(ret, i, env->NewStringUTF(local_log[i].c_str()));
+        }
+
+        return ret;
+    }
 }

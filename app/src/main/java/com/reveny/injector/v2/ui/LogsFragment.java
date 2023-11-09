@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,25 +17,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LogsFragment extends Fragment {
-    public static LogsFragment instance;
-
     private TextView console;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_logs, container, false);
         console = root.findViewById(R.id.console);
-        instance = this;
-
-        // Load Logs
-        for (String l : LogManager.GetLogs()) {
-            AddLog(l);
-        }
 
         return root;
     }
 
-    public void AddLog(String log) {
-        console.append(log + "\n");
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Executed every time Log View gets opened
+        console.setText(""); // clear console
+
+        // Load Logs again
+        for (String l : LogManager.GetLogs()) {
+            console.append(l + "\n");
+        }
     }
 }

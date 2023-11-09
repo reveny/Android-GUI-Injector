@@ -44,7 +44,11 @@ public class RootService extends com.topjohnwu.superuser.ipc.RootService impleme
         boolean remapLibrary = message.getData().getBoolean("remap_library");
 
         int result = Native.Inject(pkgName, libPath, launcherAct, autoLaunch, killBeforeLaunch, remapLibrary);
+        String[] log = Native.GetNativeLogs();
+
         bundle.putInt("result", result);
+        bundle.putStringArray("log", log);
+
         msg.setData(bundle);
 
         try {

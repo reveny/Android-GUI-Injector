@@ -40,10 +40,18 @@ public class RootHandler implements Handler.Callback {
 
         if (result == -1) {
             LogManager.AddLog("Injection failed: " + result);
-        } else if (result == 0) {
+        } else if (result == 1) {
             LogManager.AddLog("Injection success: " + result);
+        }
+
+        // Add Log from native
+        String[] logs = message.getData().getStringArray("log");
+        if (logs != null) {
+            for (String log : logs) {
+                LogManager.AddLog(log);
+            }
         } else {
-            LogManager.AddLog("Something went completely wrong: " + result);
+            LogManager.AddLog("Failed to get native Log");
         }
 
         return false;

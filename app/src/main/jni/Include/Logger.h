@@ -5,6 +5,8 @@
 #include <jni.h>
 #include <cstdio>
 #include <cstdlib>
+#include <vector>
+#include <string>
 
 #define TAG "RevenyInjector"
 enum daLogType {
@@ -14,6 +16,7 @@ enum daLogType {
     daWARN = 5
 };
 
+inline std::vector<std::string> log_messages{};
 inline void CustomLog(daLogType type, const char* tag, const char* message, ...) {
     char msg[256];
     va_list arg;
@@ -21,21 +24,10 @@ inline void CustomLog(daLogType type, const char* tag, const char* message, ...)
     vsnprintf(msg, 120, message, arg);
 
     // Print to logcat
-    (void)__android_log_print(type, TAG, msg);
+    (void)__android_log_print(type, tag, msg);
 
-    // Pass to java
-    /*
-    if (log_env != nullptr) {
-        jclass log_mgr = log_env->FindClass("com/reveny/injector/v2/LogManager");
-        jmethodID add_log = log_env->GetStaticMethodID(log_mgr, "AddLog", "(Ljava/lang/String;)V");
-
-        // Convert log to string and call
-        jstring str = log_env->NewStringUTF(msg);
-        log_env->CallStaticVoidMethod(log_mgr, add_log, str);
-    }
-     */
-
-    // TODO: Fix pass log to java or write log to a file
+    // Add to vector so we can print later
+    log_messages.push_back(msg);
 }
 
 #define LOGD(...) ((void)CustomLog(daDEBUG, TAG, __VA_ARGS__))
