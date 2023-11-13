@@ -43,6 +43,10 @@ int RevMemory::Inject(pid_t pid, const char* library, bool remap) {
     if (dlopen_ret == 0x0) {
         LOGE("[-] DLOPEN Failed: Returned Handle %p", dlopen_ret);
 
+        // Call DLError
+        char* error = (char *)process.call((void *)dlerror);
+        LOGE("[-] DLOPEN Failed: %s", error);
+
         // Detach Process and return
         (void)xptrace(PTRACE_DETACH, pid);
         return -1;
