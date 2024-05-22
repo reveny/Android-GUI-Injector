@@ -11,6 +11,8 @@ GUI App for Injecting shared libraries or dex on Android
 - [x] Support Magisk
 - [x] Bypass linker restrictions
 - [x] Bypass some common detections
+- [x] Select target library through file picker
+- [x] Easy to use UI  
 - [ ] Spoof app package name (to be added)
 - [ ] Support injecting dex (to be added)
 
