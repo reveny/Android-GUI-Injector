@@ -1,6 +1,7 @@
-#include "Headers/RemoteProcess.h"
-#include "Headers/RevMemory.h"
-#include "Headers/xptrace.h"
+//
+// Created by reveny on 5/17/24.
+//
+
 #include <elf.h>
 #include <sys/mount.h>
 #include <sys/ptrace.h>
@@ -8,6 +9,10 @@
 #include <sys/uio.h>
 #include <cstring>
 #include <unistd.h>
+
+#include <RemoteProcess.hpp>
+#include <RevMemory.hpp>
+#include <xptrace.hpp>
 
 using namespace std;
 

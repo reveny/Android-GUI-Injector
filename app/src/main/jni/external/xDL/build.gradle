@@ -1,0 +1,44 @@
+plugins {
+    id 'com.android.application' version '7.4.2' apply false
+    id 'com.android.library' version '7.4.2' apply false
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext {
+    minSdkVersion = 16
+    compileSdkVersion = 33
+    targetSdkVersion = 33
+    buildToolsVersion = "33.0.2"
+    javaVersion = JavaVersion.VERSION_1_8
+    ndkVersion = "23.2.8568313"
+    cmakeVersion = "3.22.1"
+    abiFilters = "armeabi-v7a,arm64-v8a,x86,x86_64"
+    useASAN = false
+    dependencyOnLocalLibrary = true
+    xdlVersion = "2.0.0"
+
+    POM_GROUP_ID = "io.github.hexhacking"
+    POM_ARTIFACT_ID = "xdl"
+    POM_VERSION_NAME = "2.0.0"
+
+    POM_NAME = "xDL Android Lib"
+    POM_DESCRIPTION = "xDL is an enhanced implementation of the Android DL series functions."
+    POM_URL = "https://github.com/hexhacking/xDL"
+    POM_INCEPTION_YEAR = "2020"
+    POM_PACKAGING = "aar"
+
+    POM_SCM_CONNECTION = "https://github.com/hexhacking/xDL.git"
+
+    POM_ISSUE_SYSTEM = "github"
+    POM_ISSUE_URL = "https://github.com/hexhacking/xDL/issues"
+
+    POM_LICENCE_NAME = "The MIT License"
+    POM_LICENCE_URL = "https://opensource.org/licenses/MIT"
+    POM_LICENCE_DIST = "repo"
+
+    POM_DEVELOPER_ID = "HexHacking"
+    POM_DEVELOPER_NAME = "HexHacking Team"
+}

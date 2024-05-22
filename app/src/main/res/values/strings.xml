@@ -1,10 +1,47 @@
 <resources>
-    <string name="app_name">Android Injector V2</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="created_by_reveny">Created by Reveny</string>
-    <string name="github">Github</string>
-    <string name="telegram">Telegram</string>
-    <string name="telegram_channel">Telegram Channel</string>
-    <string name="device_information">Device Information</string>
+    <string name="app_name" translatable="false">GUI Injector</string>
+    <string name="Home">Home</string>
+
+    <string name="about_view_source_code"><![CDATA[Copyright © %1$s<br/>Join our %2$s channel]]></string>
+    <string name="info_api_version">API version</string>
+    <string name="info_framework_version">Framework version</string>
+    <string name="info_manager_package_name">Manager package name</string>
+    <string name="info_system_version">System version</string>
+    <string name="info_device">Device</string>
+    <string name="info_system_abi">System ABI</string>
+    <string name="info_system_root">Root System</string>
+    <string name="info_is_rooted">Rooted</string>
+    <string name="info_is_emulator">Emulator</string>
+
+    <string name="Settings">Settings</string>
+    <string name="pure_black_dark_theme">Black dark theme</string>
+    <string name="pure_black_dark_theme_summary">Use the pure black theme if dark theme is enabled</string>
+    <string name="settings_group_theme">Theme</string>
+    <string name="theme_color">Theme color</string>
+    <string name="theme_color_system">System theme color</string>
+    <string name="settings_group_system">System</string>
+    <string name="settings_language">Language</string>
+
+    <string name="color_sakura">Sakura</string>
+    <string name="color_red">Red</string>
+    <string name="color_pink">Pink</string>
+    <string name="color_purple">Purple</string>
+    <string name="color_deep_purple">Deep purple</string>
+    <string name="color_indigo">Indigo</string>
+    <string name="color_blue">Blue</string>
+    <string name="color_light_blue">Light blue</string>
+    <string name="color_cyan">Cyan</string>
+    <string name="color_teal">Teal</string>
+    <string name="color_green">Green</string>
+    <string name="color_light_green">Light green</string>
+    <string name="color_lime">Lime</string>
+    <string name="color_yellow">Yellow</string>
+    <string name="color_amber">Amber</string>
+    <string name="color_orange">Orange</string>
+    <string name="color_deep_orange">Deep orange</string>
+    <string name="color_brown">Brown</string>
+    <string name="color_blue_grey">Blue grey</string>
+    <string name="overview">Overview</string>
+    <string name="logs">Logs</string>
+    <string name="injection">Injection</string>
 </resources>

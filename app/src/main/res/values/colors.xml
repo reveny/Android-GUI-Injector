@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="blue">#0096FF</color>
-    <color name="grey">#1c2022</color>
+    <color name="primary_text_material_inverse">@color/abc_primary_text_material_dark</color>
+
+    <color name="primary_text_material">@color/abc_primary_text_material_light</color>
+
+    <color name="ic_launcher_foreground">#FFFFFF</color>
+    <color name="light_blue_400">#FF29B6F6</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="gray_400">#FFBDBDBD</color>
+    <color name="gray_600">#FF757575</color>
 </resources>

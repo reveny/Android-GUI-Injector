@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/settings_language">
+
+        <rikka.preference.SimpleMenuPreference
+            android:defaultValue="SYSTEM"
+            android:icon="@drawable/language_square_outline"
+            android:key="language"
+            android:popupTheme="@style/language_menu_style"
+            android:summary="%s"
+            android:title="@string/settings_language" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/settings_group_theme">
+        <rikka.material.preference.MaterialSwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_outline_palette_24"
+            android:key="follow_system_accent"
+            android:title="@string/theme_color_system"
+            app:isPreferenceVisible="false" />
+        <rikka.preference.SimpleMenuPreference
+            android:defaultValue="COLOR_BLUE"
+            android:entries="@array/color_texts"
+            android:entryValues="@array/color_values"
+            android:icon="@drawable/brush_outline"
+            android:key="theme_color"
+            android:summary="%s"
+            android:title="@string/theme_color" />
+        <rikka.preference.SimpleMenuPreference
+            android:defaultValue="MODE_NIGHT_FOLLOW_SYSTEM"
+            android:entries="@array/theme_texts"
+            android:entryValues="@array/theme_values"
+            android:icon="@drawable/moon_outline"
+            android:key="dark_theme"
+            android:summary="%s"
+            android:title="@string/dark_theme" />
+        <rikka.material.preference.MaterialSwitchPreference
+            android:icon="@drawable/ic_outline_invert_colors_24"
+            android:key="black_dark_theme"
+            android:summary="@string/pure_black_dark_theme_summary"
+            android:title="@string/pure_black_dark_theme" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="category_spoof"
+        android:title="Spoof">
+        <!--
+        <Preference
+            android:key="randomize_package_name"
+            android:title="Randomize Package Name"
+            android:summary="Randomizes the package name for spoofing purposes"
+            android:widgetLayout="@layout/preference_widget_button" /> -->
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

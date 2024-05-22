@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:ignore="MissingDefaultResource">
+
+    <item
+        android:id="@+id/injection_fragment"
+        android:icon="@drawable/ic_dev"
+        android:title="@string/injection" />
+    <item
+        android:id="@+id/main_fragment"
+        android:icon="@drawable/ic_home"
+        android:title="@string/overview" />
+    <item
+        android:id="@+id/logs_fragment"
+        android:icon="@drawable/ic_logs"
+        android:title="@string/logs" />
+</menu>
