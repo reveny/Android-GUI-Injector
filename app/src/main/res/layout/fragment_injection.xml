@@ -159,10 +159,24 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/remap_library_holder"
+                    android:id="@+id/inject_zygote_holder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp">
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/inject_zygote"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:layout_weight="1"
+                        android:text="@string/inject_through_zygote" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/remap_library_holder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/remap_lib"
@@ -170,7 +184,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:layout_weight="1"
-                        android:text="Remap Library" />
+                        android:text="@string/remap_library" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -184,7 +198,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:layout_weight="1"
-                        android:text="Use Proxy Library" />
+                        android:text="@string/use_proxy_library" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -198,7 +212,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:layout_weight="1"
-                        android:text="Randomize Proxy Library" />
+                        android:text="@string/randomize_proxy_library" />
                 </LinearLayout>
 
                 <!--
@@ -228,7 +242,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:layout_weight="1"
-                        android:text="Hide Injected Library" />
+                        android:text="@string/hide_injected_library" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -242,7 +256,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:layout_weight="1"
-                        android:text="Bypass namespace restrictions" />
+                        android:text="@string/bypass_namespace_restrictions" />
                 </LinearLayout>
 
             </LinearLayout>

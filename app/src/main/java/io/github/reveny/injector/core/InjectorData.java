@@ -14,6 +14,8 @@ public class InjectorData {
 
     private boolean shouldAutoLaunch;
     private boolean shouldKillBeforeLaunch;
+
+    private boolean injectZygote;
     private boolean remapLibrary;
 
     private boolean useProxy;
@@ -28,6 +30,7 @@ public class InjectorData {
         instance = this;
         this.shouldAutoLaunch = false;
         this.shouldKillBeforeLaunch = false;
+        this.injectZygote = false;
         this.remapLibrary = false;
         this.useProxy = false;
         this.randomizeProxyName = false;
@@ -74,6 +77,14 @@ public class InjectorData {
 
     public void setShouldKillBeforeLaunch(boolean shouldKillBeforeLaunch) {
         this.shouldKillBeforeLaunch = shouldKillBeforeLaunch;
+    }
+
+    public boolean isInjectZygote() {
+        return injectZygote;
+    }
+
+    public void setInjectZygote(boolean injectZygote) {
+        this.injectZygote = injectZygote;
     }
 
     public boolean isRemapLibrary() {
@@ -135,6 +146,7 @@ public class InjectorData {
         data.putBoolean("shouldAutoLaunch", shouldAutoLaunch);
         data.putBoolean("shouldKillBeforeLaunch", shouldKillBeforeLaunch);
 
+        data.putBoolean("injectZygote", injectZygote);
         data.putBoolean("remapLibrary", remapLibrary);
         data.putBoolean("useProxy", useProxy);
         data.putBoolean("randomizeProxyName", randomizeProxyName);
@@ -156,6 +168,7 @@ public class InjectorData {
         this.shouldAutoLaunch = data.getBoolean("shouldAutoLaunch");
         this.shouldKillBeforeLaunch = data.getBoolean("shouldKillBeforeLaunch");
 
+        this.injectZygote = data.getBoolean("injectZygote");
         this.remapLibrary = data.getBoolean("remapLibrary");
         this.useProxy = data.getBoolean("useProxy");
         this.randomizeProxyName = data.getBoolean("randomizeProxyName");
@@ -174,6 +187,7 @@ public class InjectorData {
         ", libraryPath='" + libraryPath + '\'' +
         ", shouldAutoLaunch=" + shouldAutoLaunch +
         ", shouldKillBeforeLaunch=" + shouldKillBeforeLaunch +
+        ", injectZygote=" + injectZygote +
         ", remapLibrary=" + remapLibrary +
         ", useProxy=" + useProxy +
         ", randomizeProxyName=" + randomizeProxyName +

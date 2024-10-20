@@ -132,6 +132,22 @@ public class InjectionFragment extends BaseFragment {
     }
 
     private void setupSettings() {
+        binding.injectZygote.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                binding.enableProxy.setChecked(false);
+                binding.autoLaunch.setChecked(true);
+            }
+
+            if (Utility.isEmulator()) {
+                Toast.makeText(requireContext(), "Emulator detected, zygote injection is not supported here yet!", Toast.LENGTH_LONG).show();
+                if (isChecked) binding.bypassRestrictions.setChecked(false);
+                return;
+            }
+
+            injectorData.setInjectZygote(isChecked);
+            LogManager.AddLog("Inject Zygote: " + isChecked);
+        });
+
         binding.remapLib.setOnCheckedChangeListener((buttonView, isChecked) -> {
             injectorData.setRemapLibrary(isChecked);
             LogManager.AddLog("Remap Library: " + isChecked);
@@ -149,13 +165,6 @@ public class InjectionFragment extends BaseFragment {
             LogManager.AddLog("Randomize Proxy: " + isChecked);
         });
 
-        /*
-        binding.copyToCache.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            injectorData.setCopyToCache(isChecked);
-            LogManager.AddLog("Copy to Cache: " + isChecked);
-        });
-         */
-
         binding.hideLibrary.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) binding.enableProxy.setChecked(true);
 
@@ -164,10 +173,8 @@ public class InjectionFragment extends BaseFragment {
         });
 
         binding.bypassRestrictions.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) binding.enableProxy.setChecked(true);
-
             if (Utility.isEmulator()) {
-                Toast.makeText(requireContext(), "Emulator detected, bypassing restrictions does not work here!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Emulator detected, bypassing restrictions does not work here!", Toast.LENGTH_LONG).show();
                 if (isChecked) binding.bypassRestrictions.setChecked(false);
                 return;
             }

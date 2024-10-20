@@ -44,4 +44,10 @@
     <string name="overview">Overview</string>
     <string name="logs">Logs</string>
     <string name="injection">Injection</string>
+    <string name="inject_through_zygote">Inject through Zygote</string>
+    <string name="remap_library">Remap Library</string>
+    <string name="use_proxy_library">Use Proxy Library</string>
+    <string name="randomize_proxy_library">Randomize Proxy Library</string>
+    <string name="hide_injected_library">Hide Injected Library</string>
+    <string name="bypass_namespace_restrictions">Bypass namespace restrictions</string>
 </resources>

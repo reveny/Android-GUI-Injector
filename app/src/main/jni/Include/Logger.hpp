@@ -26,7 +26,7 @@ inline void CustomLog(daLogType type, const char* tag, const char* message, ...)
     vsnprintf(msg, 256, message, arg);
 
     // Print to logcat
-    (void)__android_log_print(type, tag, msg);
+    (void)__android_log_print(type, tag, "%s", msg);
 
     // Add to vector so we can print later
     log_messages.push_back(msg);

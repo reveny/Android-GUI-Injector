@@ -10,6 +10,7 @@
 
 #include <Injector.hpp>
 #include <InjectorData.hpp>
+#include <Utility.hpp>
 #include <RevMemory.hpp>
 
 #include <Logger.hpp>
@@ -17,6 +18,7 @@
 #include <grp.h>
 
 extern "C" jint Injector::Inject(JNIEnv* env, jclass clazz, jobject data) {
+    (void)clazz;
     LOGI("[+] Inject called");
 
     std::shared_ptr<InjectorData> injectorData = std::make_shared<InjectorData>(env, data);
@@ -27,7 +29,7 @@ extern "C" jint Injector::Inject(JNIEnv* env, jclass clazz, jobject data) {
 
     // Since the native library is likely at a place like /sdcard/ we need to make sure
     // to copy it to a directory where it can be executed from.
-    // this is either the target app's cache directory or /data/local/tmp/random
+    // We can just copy it to a random directory in /data/local/tmp
     std::filesystem::path currentPath = injectorData->getLibraryPath();
     std::string tmpDir = CreateRandomTempDirectory(injectorData->getPackageName());
     if (tmpDir.empty()) {
@@ -37,32 +39,19 @@ extern "C" jint Injector::Inject(JNIEnv* env, jclass clazz, jobject data) {
 
     // On Android 11+ we can't write to /data/data/package/cache, so we have to copy it to /data/local/tmp
     // I have removed this feature for now to not cause any confusion.
-    if (injectorData->getCopyToCache()) {
-        std::string cacheDir = "/data/data/" + injectorData->getPackageName() + "/cache/" + currentPath.filename().string();
+    std::string tmpLibraryPath = tmpDir + "/" + currentPath.filename().string();
 
-        LOGI("[+] Copying library to cache directory %s", cacheDir.c_str());
-
-        // Copy the library to the cache directory
-        CopyFile(injectorData->getLibraryPath(), cacheDir);
-        injectorData->setLibraryPath(cacheDir);
-    } else {
-        std::string tmpLibraryPath = tmpDir + "/" + currentPath.filename().string();
-
-        CopyFile(injectorData->getLibraryPath(), tmpLibraryPath);
-        injectorData->setLibraryPath(tmpLibraryPath);
+    try {
+        CopyFile(currentPath, tmpLibraryPath);
+    } catch (const std::exception& e) {
+        LOGE("[-] Failed to copy library: %s", e.what());
+        return -1;
     }
+    injectorData->setLibraryPath(tmpLibraryPath);
 
+    // Auto launch the app if enabled
     if (injectorData->getShouldAutoLaunch()) {
-        if (injectorData->getShouldKillBeforeLaunch()) {
-            pid_t processID = RevMemory::FindProcessID(injectorData->getPackageName());
-            if (processID != -1) {
-                LOGI("[+] Found process %d, killing it...", processID);
-                kill(processID, SIGKILL);
-            } else {
-                LOGI("[-] Process not found, skipping kill");
-            }
-        }
-
+        LOGI("[+] Auto launching app...");
         RevMemory::LaunchApp(injectorData->getLauncherActivity());
     }
 
@@ -79,13 +68,19 @@ extern "C" jint Injector::Inject(JNIEnv* env, jclass clazz, jobject data) {
         if (injectorData->getRandomizeProxyName()) {
             std::string tmpLibraryPath = tmpDir + "/lib" + GenerateRandomString() + ".so";
 
-            CopyFile(libraryPath, tmpLibraryPath);
+            try {
+                CopyFile(libraryPath, tmpLibraryPath);
+            } catch (const std::exception& e) {
+                LOGE("[-] Failed to copy proxy library: %s", e.what());
+                return -1;
+            }
             libraryPath = tmpLibraryPath;
         }
 
         // Inject proxy, we pass the injector data here because
         // we need to pass everything to the proxy that it needs to do.
-        int result = RevMemory::InjectProxy(libraryPath, injectorData);
+        pid_t pid = RevMemory::FindProcessID(injectorData->getPackageName());
+        int result = RevMemory::InjectProxy(pid, libraryPath, injectorData);
         LOGI("[+] Finished Proxy Injection with result %d", result);
 
         // Handle SELinux
@@ -98,7 +93,7 @@ extern "C" jint Injector::Inject(JNIEnv* env, jclass clazz, jobject data) {
     // If the target library fits is also a x86/x86_64 library, we can
     // just load it normally, if not we have to do native bridge injection.
     // unless proxy is enabled.
-    ELFParser::MachineType machine = RevMemory::GetMachineType();
+    ELFParser::MachineType machine = Utility::GetMachineType();
     ELFParser::MachineType library = ELFParser::GetMachineType(injectorData->getLibraryPath().c_str());
     if ((machine == ELFParser::MachineType::ELF_EM_386 || machine == ELFParser::MachineType::ELF_EM_X86_64)
     && (library == ELFParser::MachineType::ELF_EM_AARCH64 || library == ELFParser::MachineType::ELF_EM_ARM)) {
@@ -111,6 +106,7 @@ extern "C" jint Injector::Inject(JNIEnv* env, jclass clazz, jobject data) {
     }
 
     // Inject Normally
+    LOGI("[+] Starting Injection...");
     int result = RevMemory::Inject(processID, injectorData->getLibraryPath(), injectorData->getRemapLibrary());
     LOGI("[+] Finished Injection with result %d", result);
 
@@ -121,18 +117,22 @@ extern "C" jint Injector::Inject(JNIEnv* env, jclass clazz, jobject data) {
 }
 
 extern "C" jobjectArray Injector::GetNativeLogs(JNIEnv *env, jclass clazz) {
+    (void)clazz;
+
     LOGI("[+] GetNativeLogs called: Logging %d messages", log_messages.size());
     jobjectArray ret{};
 
     ret = (jobjectArray)env->NewObjectArray((int)log_messages.size(), env->FindClass("java/lang/String"),env->NewStringUTF(""));
-    for (int i = 0; i < log_messages.size(); ++i) {
-        env->SetObjectArrayElement(ret, i, env->NewStringUTF(log_messages[i].c_str()));
+    for (size_t i = 0; i < log_messages.size(); ++i) {
+        env->SetObjectArrayElement(ret, static_cast<jlong>(i), env->NewStringUTF(log_messages[i].c_str()));
     }
 
     return ret;
 }
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+    (void)reserved;
+
     JNIEnv* env;
     if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
         return JNI_ERR;
@@ -199,6 +199,9 @@ void Injector::CopyFile(const std::filesystem::path& source, const std::filesyst
         if (chown(destination.string().c_str(), uid, gid) == -1) {
             LOGE("[-] Failed to change ownership of directory %s ([%d] %s)", destination.string().c_str(), errno, strerror(errno));
         }
+
+        // For some reason this causes an error?
+        // system(("chmod +x " + destination.string()).c_str());
     } catch (const std::filesystem::filesystem_error& e) {
         LOGE("[-] Filesystem error: %s", e.what());
     } catch (const std::runtime_error& e) {
@@ -210,18 +213,17 @@ void Injector::CopyFile(const std::filesystem::path& source, const std::filesyst
     }
 }
 
-
 std::string Injector::GenerateRandomString() {
     const std::string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     std::random_device rd;
     std::mt19937 generator(rd());
-    std::uniform_int_distribution<> distribution(0, characters.size() - 1);
+    std::uniform_int_distribution<> distribution(0, (int)characters.size() - 1);
 
     std::string randomString;
     randomString.reserve(10);
 
     for (size_t i = 0; i < 10; ++i) {
-        randomString += characters[distribution(generator)];
+        randomString += characters[static_cast<unsigned int>(distribution(generator))];
     }
 
     return randomString;

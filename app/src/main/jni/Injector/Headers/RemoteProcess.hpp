@@ -10,9 +10,10 @@
 
 class RemoteProcess {
 private:
-#if defined(__arm__) || defined(__aarch64__)
-    static constexpr auto CPSR_T_MASK = (1u << 5);
-#endif
+    #if defined(__arm__) || defined(__aarch64__)
+        static constexpr auto CPSR_T_MASK = (1u << 5);
+    #endif
+
     #if defined(__arm__)
         #define CPSR_T_MASK (1u << 5)
         #define PARAMS_IN_REGS 4
@@ -31,33 +32,36 @@ private:
 
     int pid;
 
-    bool _remote_read(uintptr_t addr, void *buf, size_t len) const;
-    bool _remote_write(uintptr_t addr, const void *buf, size_t len) const;
-    bool _remote_getregs(pt_regs *regs) const;
-    bool _remote_setregs(pt_regs *regs) const;
-    uintptr_t remote_call_abi(uintptr_t func_addr, int nargs, va_list va) const;
-    uintptr_t call_absolute(uintptr_t addr, int nargs, ...) const;
-    uintptr_t call_vararg(uintptr_t addr, int nargs, ...) const;
+    bool RemoteRead(uintptr_t addr, void *buf, size_t len);
+    bool RemoteWrite(uintptr_t addr, const void *buf, size_t len);
+
+    bool RemoteGetregs(pt_regs *regs);
+    bool RemoteSetregs(pt_regs *regs);
+
+    uintptr_t RemoteCall(uintptr_t func_addr, int nargs, va_list va);
+    uintptr_t CallAbsolute(uintptr_t addr, int nargs, ...);
+    uintptr_t CallVararg(uintptr_t addr, int nargs, ...);
+
 public:
-    explicit RemoteProcess(int pid);
+    RemoteProcess(pid_t pid);
 
-    pid_t get_pid() const;
-    uintptr_t remote_string(const char* string);
+    pid_t GetPID();
+    uintptr_t RemoteString(std::string string);
 
-    bool write(uintptr_t addr, const void *buf, size_t len) const;
-    bool read(uintptr_t addr, void *buf, size_t len) const;
+    bool Write(uintptr_t addr, const void *buf, size_t len);
+    bool Read(uintptr_t addr, void *buf, size_t len);
 
     // Call Template
     template<class FuncPtr, class ...Args>
-    uintptr_t call(FuncPtr sym, Args && ...args) const {
+    uintptr_t call(FuncPtr sym, Args && ...args) {
         auto addr = reinterpret_cast<uintptr_t>(sym);
-        return call_vararg(addr, sizeof...(args), std::forward<Args>(args)...);
+        return CallVararg(addr, sizeof...(args), std::forward<Args>(args)...);
     }
 
     // Absolute Call Template
     template<class FuncPtr, class ...Args>
-    uintptr_t a_call(FuncPtr sym, Args && ...args) const {
+    uintptr_t a_call(FuncPtr sym, Args && ...args) {
         auto addr = reinterpret_cast<uintptr_t>(sym);
-        return call_absolute(addr, sizeof...(args), std::forward<Args>(args)...);
+        return CallAbsolute(addr, sizeof...(args), std::forward<Args>(args)...);
     }
 };

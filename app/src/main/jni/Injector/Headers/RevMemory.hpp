@@ -15,16 +15,6 @@
 #include <ELFUtil.hpp>
 
 namespace RevMemory {
-    struct ProcMapInfo {
-        uintptr_t start;
-        uintptr_t end;
-        uintptr_t offset;
-        uint8_t perms;
-        ino_t inode;
-        char* dev;
-        char* path;
-    };
-
     // https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md
     #if defined(__arm__)
         #define process_vm_readv_syscall 376
@@ -46,21 +36,26 @@ namespace RevMemory {
 
     int Inject(pid_t pid, std::string library, bool remap);
     int EmulatorInject(pid_t pid, std::string library, bool remap);
-    int InjectProxy(std::string libraryPath, std::shared_ptr<InjectorData> data);
 
-    bool process_virtual_memory(pid_t pid, void *address, void *buffer, size_t size, bool iswrite);
+    int InjectLinkerBypass(std::shared_ptr<RemoteProcess> process, std::string libraryPath, std::shared_ptr<InjectorData> data);
+    int InjectMemfdDlopen(std::shared_ptr<RemoteProcess> process, std::string libraryPath, std::shared_ptr<InjectorData> data);
+    int InjectProxy(pid_t pid, std::string libraryPath, std::shared_ptr<InjectorData> data);
+
+    uintptr_t CopyInjectorData(std::shared_ptr<RemoteProcess> process, std::shared_ptr<InjectorData> data);
+    bool ProcessVirtualMemory(pid_t pid, void *address, void *buffer, size_t size, bool iswrite);
+
     void LaunchApp(std::string activity);
     pid_t WaitForProcess(std::string packageName);
     pid_t FindProcessID(std::string packageName);
+
     void SetSELinux(int enabled);
-    int GetSDKVersion();
-    ELFParser::MachineType GetMachineType();
     std::string GetNativeLibraryDirectory();
-    void* get_module_base_addr(pid_t pid, const char* loduleName);
-    std::vector<RevMemory::ProcMapInfo> list_modules(pid_t pid, const char* library);
-    void remote_remap(RemoteProcess process, const char* library_name);
-    const char *get_remote_module_name(pid_t pid, uintptr_t addr);
-    void* get_remote_func_addr(pid_t pid, const char* moduleName, void* localFuncAddr);
+
+    uintptr_t GetModuleBase(pid_t pid, std::string loduleName);
+    void RemoteRemap(std::shared_ptr<RemoteProcess> process, std::string libraryName);
+
+    std::string GetRemoteModuleName(pid_t pid, uintptr_t addr);
+    uintptr_t GetRemoteFunctionAddr(pid_t pid, std::string moduleName, uintptr_t localFuncAddr);
 
     template<typename T>
     T Read(pid_t pid, uintptr_t address, size_t size = 0) {
@@ -70,12 +65,12 @@ namespace RevMemory {
         }
 
         T data;
-        process_virtual_memory(pid, reinterpret_cast<void *>(address), reinterpret_cast<void *>(&data), sizeof(T), false);
+        ProcessVirtualMemory(pid, reinterpret_cast<void *>(address), reinterpret_cast<void *>(&data), sizeof(T), false);
         return data;
     }
 
     template<typename T>
     void Write(pid_t pid, uintptr_t address, T data) {
-        process_virtual_memory(pid, (void *) address, reinterpret_cast<void *>(&data), sizeof(T), true);
+        ProcessVirtualMemory(pid, (void *) address, reinterpret_cast<void *>(&data), sizeof(T), true);
     }
 };

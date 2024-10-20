@@ -29,5 +29,5 @@ namespace NativeBridge {
     };
 
     std::string GetNativeBridge();
-    int LoadNativeBridge(RemoteProcess process, void* data, size_t length);
+    int LoadNativeBridge(std::shared_ptr<RemoteProcess> process, void* data, size_t length);
 }

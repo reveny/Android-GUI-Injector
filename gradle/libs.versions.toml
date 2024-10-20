@@ -1,8 +1,8 @@
 [versions]
-agp = "8.1.0"
+agp = "8.3.2"
 core = "4.6.2"
-coreVersion = "5.0.2"
-nav = "2.7.7"
+coreVersion = "6.0.0"
+nav = "2.8.3"
 okhttp = "4.12.0"
 
 [plugins]

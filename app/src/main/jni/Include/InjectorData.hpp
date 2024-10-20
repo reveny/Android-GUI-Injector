@@ -6,12 +6,24 @@
 #include <string>
 #include <jni.h>
 #include <android/log.h>
+#include <stdexcept>
+
+#define CHECK_JNI_EXCEPTION(env) \
+    if ((env)->ExceptionCheck()) { \
+        (env)->ExceptionDescribe(); \
+        (env)->ExceptionClear(); \
+        throw std::runtime_error("JNI Exception occurred"); \
+    }
 
 #define GET_JAVA_STRING(env, obj, method) \
     ({ \
-        jstring jstr = (jstring)env->CallObjectMethod(obj, env->GetMethodID(env->GetObjectClass(obj), method, "()Ljava/lang/String;")); \
-        const char* chars = env->GetStringUTFChars(jstr, nullptr); \
         std::string result; \
+        if (env == nullptr || obj == nullptr) { \
+            throw std::invalid_argument("JNIEnv or jobject is null in GET_JAVA_STRING"); \
+        } \
+        jstring jstr = (jstring)env->CallObjectMethod(obj, env->GetMethodID(env->GetObjectClass(obj), method, "()Ljava/lang/String;")); \
+        CHECK_JNI_EXCEPTION(env); \
+        const char* chars = env->GetStringUTFChars(jstr, nullptr); \
         if (chars != nullptr) { \
             result = chars; \
             env->ReleaseStringUTFChars(jstr, chars); \
@@ -22,12 +34,39 @@
 
 #define GET_JAVA_BOOL(env, obj, method) \
     ({ \
+        jboolean result = false; \
+        if (env == nullptr || obj == nullptr) { \
+            throw std::invalid_argument("JNIEnv or jobject is null in GET_JAVA_BOOL"); \
+        } \
         jclass cls = env->GetObjectClass(obj); \
-        jmethodID mid = env->GetMethodID(cls, method, "()Z"); \
-        jboolean result = env->CallBooleanMethod(obj, mid); \
-        env->DeleteLocalRef(cls); \
+        if (cls != nullptr) { \
+            jmethodID mid = env->GetMethodID(cls, method, "()Z"); \
+            CHECK_JNI_EXCEPTION(env); \
+            result = env->CallBooleanMethod(obj, mid); \
+            env->DeleteLocalRef(cls); \
+        } else { \
+            throw std::runtime_error("Failed to get class in GET_JAVA_BOOL"); \
+        } \
         result; \
     })
+
+struct RemoteInjectorData {
+    uintptr_t packageName;
+    uintptr_t launcherActivity;
+    uintptr_t libraryPath;
+
+    bool shouldAutoLaunch;
+    bool shouldKillBeforeLaunch;
+    bool injectZygote;
+    bool remapLibrary;
+
+    bool useProxy;
+    bool randomizeProxyName;
+    bool copyToCache;
+    bool hideLibrary;
+
+    bool bypassNamespaceRestrictions;
+};
 
 class InjectorData {
 private:
@@ -37,6 +76,7 @@ private:
 
     bool shouldAutoLaunch;
     bool shouldKillBeforeLaunch;
+    bool injectZygote;
     bool remapLibrary;
 
     bool useProxy;
@@ -44,13 +84,13 @@ private:
     bool copyToCache;
     bool hideLibrary;
 
-    // Until I figure out how to steal the code from xdl, this requires usage of the proxy
     bool bypassNamespaceRestrictions;
 
 public:
     InjectorData() {
         this->shouldAutoLaunch = false;
         this->shouldKillBeforeLaunch = false;
+        this->injectZygote = false;
         this->remapLibrary = false;
         this->useProxy = false;
         this->randomizeProxyName = false;
@@ -60,63 +100,85 @@ public:
     }
 
     InjectorData(JNIEnv* env, jobject data) {
-        this->packageName = GET_JAVA_STRING(env, data, "getPackageName");
-        this->launcherActivity = GET_JAVA_STRING(env, data, "getLauncherActivity");
-        this->libraryPath = GET_JAVA_STRING(env, data, "getLibraryPath");
+        if (env == nullptr || data == nullptr) {
+            throw std::invalid_argument("JNIEnv or jobject is null in constructor");
+        }
+        try {
+            this->packageName = GET_JAVA_STRING(env, data, "getPackageName");
+            this->launcherActivity = GET_JAVA_STRING(env, data, "getLauncherActivity");
+            this->libraryPath = GET_JAVA_STRING(env, data, "getLibraryPath");
 
-        this->shouldAutoLaunch = GET_JAVA_BOOL(env, data, "isShouldAutoLaunch");
-        this->shouldKillBeforeLaunch = GET_JAVA_BOOL(env, data, "isShouldKillBeforeLaunch");
-        this->remapLibrary = GET_JAVA_BOOL(env, data, "isRemapLibrary");
+            this->shouldAutoLaunch = GET_JAVA_BOOL(env, data, "isShouldAutoLaunch");
+            this->shouldKillBeforeLaunch = GET_JAVA_BOOL(env, data, "isShouldKillBeforeLaunch");
+            this->injectZygote = GET_JAVA_BOOL(env, data, "isInjectZygote");
+            this->remapLibrary = GET_JAVA_BOOL(env, data, "isRemapLibrary");
 
-        this->useProxy = GET_JAVA_BOOL(env, data, "isUseProxy");
-        this->randomizeProxyName = GET_JAVA_BOOL(env, data, "isRandomizeProxyName");
-        this->copyToCache = GET_JAVA_BOOL(env, data, "isCopyToCache");
-        this->hideLibrary = GET_JAVA_BOOL(env, data, "isHideLibrary");
-        this->bypassNamespaceRestrictions = GET_JAVA_BOOL(env, data, "isBypassNamespaceRestrictions");
+            this->useProxy = GET_JAVA_BOOL(env, data, "isUseProxy");
+            this->randomizeProxyName = GET_JAVA_BOOL(env, data, "isRandomizeProxyName");
+            this->copyToCache = GET_JAVA_BOOL(env, data, "isCopyToCache");
+            this->hideLibrary = GET_JAVA_BOOL(env, data, "isHideLibrary");
+            this->bypassNamespaceRestrictions = GET_JAVA_BOOL(env, data, "isBypassNamespaceRestrictions");
+        } catch (const std::exception& e) {
+            __android_log_print(ANDROID_LOG_ERROR, "RevenyInjector", "Error in JNI operation: %s", e.what());
+            throw;
+        }
     }
 
-    void setPackageName(std::string packageName) {
-        this->packageName = packageName;
+    void setPackageName(const std::string& _packageName) {
+        if (_packageName.empty()) {
+            throw std::invalid_argument("Package name cannot be empty");
+        }
+        this->packageName = _packageName;
     }
 
-    void setLauncherActivity(std::string launcherActivity) {
-        this->launcherActivity = launcherActivity;
+    void setLauncherActivity(const std::string& _launcherActivity) {
+        if (_launcherActivity.empty()) {
+            throw std::invalid_argument("Launcher activity cannot be empty");
+        }
+        this->launcherActivity = _launcherActivity;
     }
 
-    void setLibraryPath(std::string libraryPath) {
-        this->libraryPath = libraryPath;
+    void setLibraryPath(const std::string& _libraryPath) {
+        if (_libraryPath.empty()) {
+            throw std::invalid_argument("Library path cannot be empty");
+        }
+        this->libraryPath = _libraryPath;
     }
 
-    void setShouldAutoLaunch(bool shouldAutoLaunch) {
-        this->shouldAutoLaunch = shouldAutoLaunch;
+    void setShouldAutoLaunch(bool _shouldAutoLaunch) {
+        this->shouldAutoLaunch = _shouldAutoLaunch;
     }
 
-    void setShouldKillBeforeLaunch(bool shouldKillBeforeLaunch) {
-        this->shouldKillBeforeLaunch = shouldKillBeforeLaunch;
+    void setShouldKillBeforeLaunch(bool _shouldKillBeforeLaunch) {
+        this->shouldKillBeforeLaunch = _shouldKillBeforeLaunch;
     }
 
-    void setRemapLibrary(bool remapLibrary) {
-        this->remapLibrary = remapLibrary;
+    void setInjectZygote(bool _injectZygote) {
+        this->injectZygote = _injectZygote;
     }
 
-    void setUseProxy(bool useProxy) {
-        this->useProxy = useProxy;
+    void setRemapLibrary(bool _remapLibrary) {
+        this->remapLibrary = _remapLibrary;
     }
 
-    void setRandomizeProxyName(bool randomizeProxyName) {
-        this->randomizeProxyName = randomizeProxyName;
+    void setUseProxy(bool _useProxy) {
+        this->useProxy = _useProxy;
     }
 
-    void setCopyToCache(bool copyToCache) {
-        this->copyToCache = copyToCache;
+    void setRandomizeProxyName(bool _randomizeProxyName) {
+        this->randomizeProxyName = _randomizeProxyName;
     }
 
-    void setHideLibrary(bool hideLibrary) {
-        this->hideLibrary = hideLibrary;
+    void setCopyToCache(bool _copyToCache) {
+        this->copyToCache = _copyToCache;
     }
 
-    void setBypassNamespaceRestrictions(bool bypassNamespaceRestrictions) {
-        this->bypassNamespaceRestrictions = bypassNamespaceRestrictions;
+    void setHideLibrary(bool _hideLibrary) {
+        this->hideLibrary = _hideLibrary;
+    }
+
+    void setBypassNamespaceRestrictions(bool _bypassNamespaceRestrictions) {
+        this->bypassNamespaceRestrictions = _bypassNamespaceRestrictions;
     }
 
     std::string getPackageName() {
@@ -137,6 +199,10 @@ public:
 
     bool getShouldKillBeforeLaunch() {
         return this->shouldKillBeforeLaunch;
+    }
+
+    bool getInjectZygote() {
+        return this->injectZygote;
     }
 
     bool getRemapLibrary() {
