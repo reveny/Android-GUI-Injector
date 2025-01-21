@@ -1,6 +1,12 @@
 # Android-GUI-Injector-V2
 GUI App for Injecting shared libraries or dex on Android
 
+[![Stars](https://img.shields.io/github/stars/reveny/Android-GUI-Injector?label=Stars)](https://github.com/reveny)
+[![Release](https://img.shields.io/github/v/release/reveny/Android-GUI-Injector?label=Release&logo=github)](https://github.com/reveny/Android-GUI-Injector/releases/latest)
+[![Download](https://img.shields.io/github/downloads/reveny/Android-GUI-Injector/total?label=Downloads&logo=github)](https://github.com/reveny/Android-GUI-Injector/releases/)
+[![Channel](https://img.shields.io/badge/Telegram-Channel-blue.svg?logo=telegram)](https://t.me/reveny1)
+[![CI](https://github.com/reveny/Android-GUI-Injector/actions/workflows/main.yml/badge.svg)](https://github.com/reveny/Android-GUI-Injector/actions/workflows/main.yml)
+
 # Features
 - [x] Android 5 - 14
 - [x] Support arm and arm64 emulation
@@ -32,9 +38,12 @@ libsu by topjohnwu: https://github.com/topjohnwu/libsu <br />
 xdl by hexhacking: https://github.com/hexhacking/xDL <br />
 TInjector by Mrack: https://github.com/Mrack/TInjector <br />
 
-# Contact
-Telegram Group: https://t.me/reveny1 <br>
-Telegram Contact: https://t.me/revenyy
+## Contact
+For any questions, collaboration requests, or updates, feel free to reach out via:
+- **Telegram Channel**: [Join Channel](https://t.me/reveny1) <br>
+- **Telegram Contact**: [Contact Me](https://t.me/revenyy) <br>
+- **Website**: [My Website](https://reveny.me) <br>
+- **Email**: [contact@reveny.me](mailto:contact@reveny.me) <br>
   
 # Screenshots
-![Preview](https://github.com/reveny/Android-GUI-Injector/blob/main/images/preview.jpg)
+<img src="https://github.com/reveny/Android-GUI-Injector/blob/main/images/preview.jpg" width="350">
